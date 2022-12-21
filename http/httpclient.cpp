@@ -54,18 +54,18 @@ http::response<http::string_body> HttpClient::get_stream(std::string uri)
     return response;
 }
 
-int HttpClient::get(std::string target)
+int HttpClient::get(std::string target, std::string& out)
 {
   
     connect_ssl(this->host_);
     std::cout << this->host_;
     auto response = get_stream(target);
-    //std::cout << response << '\n';
+    out = std::move(response.body());
 
     boost::system::error_code ec;
     stream_ptr->shutdown(ec);
     stream_ptr->next_layer().close(ec);
-     
+
     return response.result_int();
 }
 
@@ -75,3 +75,6 @@ HttpClient::HttpClient(ssl::context& ssl_ctx, asio::io_context& ctx, std::string
     ssl_context{ ssl_ctx }
 {
 }
+
+
+

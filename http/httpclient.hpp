@@ -15,6 +15,8 @@
 #include <boost/certify/extensions.hpp>
 #include <boost/certify/https_verification.hpp>
 
+
+
 #include <iostream>
 
 namespace beast = boost::beast;
@@ -30,7 +32,7 @@ class HttpClient {
 public:
 	HttpClient(ssl::context& ssl_ctx, asio::io_context& ctx, std::string host);
 
-	int get(std::string target);
+	int get(std::string target, std::string& out);
 
 
 private:
