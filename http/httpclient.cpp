@@ -41,7 +41,7 @@ http::response<http::string_body> HttpClient::get_stream(std::string uri)
     http::request<http::empty_body> request;
     request.method(http::verb::get);
     request.target(uri);
-    std::cout << uri << "\n";
+    //std::cout << uri << "\n";
     request.keep_alive(false);
     request.set(http::field::host, host_);
     http::write(*stream_ptr, request);

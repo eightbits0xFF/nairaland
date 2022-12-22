@@ -37,13 +37,8 @@ static void search_for_links(GumboNode* node, std::vector<std::string>& urls) {
 std::stack<std::string> linkQueue;
 
 void httpProcessor(HttpClient& client, std::string &target) {
-    
-    
-    
 
-    
-   
-    
+
    // std::cout << "Targeted " << target << "\n";
     visited[target]++;
     std::string out;
@@ -55,12 +50,12 @@ void httpProcessor(HttpClient& client, std::string &target) {
 
     while (!linkQueue.empty()) {
 
-        std::cout << "================= " << linkQueue.size() << "========\n";
+       // std::cout << "================= " << linkQueue.size() << "========\n";
         t = linkQueue.top(); linkQueue.pop();
 
         std::cout << t << "\n";
         
-
+       
         for (auto url : urls) {
             
             Poco::URI link(url);
