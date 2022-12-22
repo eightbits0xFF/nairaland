@@ -24,7 +24,7 @@ static void search_for_links(GumboNode* node, std::vector<std::string>& urls) {
     GumboAttribute* href;
     if (node->v.element.tag == GUMBO_TAG_A &&
         (href = gumbo_get_attribute(&node->v.element.attributes, "href"))) {
-        std::cout << href->value << std::endl;
+      //  std::cout << href->value << std::endl;
         urls.push_back(std::string(href->value));
     }
 
@@ -41,26 +41,26 @@ void httpProcessor(HttpClient& client, std::string &target) {
     
     
 
-    linkQueue.push(target);
     
    
     
-    std::cout << "Targeted " << target << "\n";
-   
-    
+   // std::cout << "Targeted " << target << "\n";
+    visited[target]++;
+    std::string out;
+    std::cout << client.get(target, out);
+    std::vector<std::string> urls;
+    GumboOutput* output = gumbo_parse(out.c_str());
+    search_for_links(output->root, urls);
+    std::string t;
 
     while (!linkQueue.empty()) {
 
-        std::string out;
-        std::string t = linkQueue.top(); linkQueue.pop();
-       
-        std::cout << client.get(t, out);
+        std::cout << "================= " << linkQueue.size() << "========\n";
+        t = linkQueue.top(); linkQueue.pop();
 
-        std::vector<std::string> urls;
-        GumboOutput* output = gumbo_parse(out.c_str());
-        search_for_links(output->root, urls);
+        std::cout << t << "\n";
+        
 
-        visited[t]++;
         for (auto url : urls) {
             
             Poco::URI link(url);
@@ -70,20 +70,27 @@ void httpProcessor(HttpClient& client, std::string &target) {
                 // std::cout << url << "\n";
                 std::string path = link.getPath();
                 if (visited[path] < 1) {
-                    std::cout << " Detected " << path << "\n";
+                    //std::cout << " Detected " << path << "\n";
                     linkQueue.push(path);
+                    
                 }
             }
 
-           
-
+            urls.pop_back();
+            
+    }
+     
+       // httpProcessor(client, t);
+        if (output != nullptr) {
+             gumbo_destroy_output(&kGumboDefaultOptions, output);
+             output = nullptr;
+        }
+        
+        httpProcessor(client, t);
+    
     }
     
-     gumbo_destroy_output(&kGumboDefaultOptions, output);
     
-    }
-    
-
 }
 
 int main()
@@ -99,8 +106,13 @@ int main()
     HttpClient client{ ssl_ctx, ctx, "www.nairaland.com" };
     visited["/register"]++;
     visited["/login"]++;
+    visited[""]++;
+    visited[" "]++;
     std::string target = "/";
+    linkQueue.push("/");
     httpProcessor(client, target);
+
+  
 
 	return 0;
 }
