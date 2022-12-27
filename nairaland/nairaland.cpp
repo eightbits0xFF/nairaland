@@ -31,7 +31,7 @@ void processText(GumboNode* node) {
 			auto hrefvalue = gumbo_get_attribute(&node->parent->v.element.attributes, "href")->value;
 			if (std::regex_match(hrefvalue, std::regex("/[0-9]+/([A-Za-z0-9]+(-[A-Za-z0-9]+)+)#[0-9]+"))
 				
-				|| std::regex_match(hrefvalue, std::regex("/[0-9]+/([A-Za-z0-9]+(-[A-Za-z0-9]+)+)/\d#[0-9]+"))) {
+				|| std::regex_match(hrefvalue, std::regex("/[0-9]+/([A-Za-z0-9]+(-[A-Za-z0-9]+)+)/[0-9]+#[0-9]+"))) {
 				out << node->v.text.text << "\n\n\r";
 			}
 			
