@@ -67,7 +67,7 @@ static void search_for_links(GumboNode* node, std::vector<std::string>& urls) {
 	}
 }
 
-std::stack<std::string> linkQueue;
+std::priority_queue<std::string> linkQueue;
 
 void httpProcessor(HttpClient& client, std::string& target) {
 
