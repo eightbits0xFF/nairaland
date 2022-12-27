@@ -6,7 +6,7 @@
 #include "gumbo.h"
 
 #include <map>
-
+#include <unordered_map>
 #include <Poco/URI.h>
 #include <queue>
 #include <stack>
@@ -18,7 +18,7 @@ namespace io = boost::iostreams;
 
 #define NAIRALAND "www.nairaland.com"
 
-std::map<std::string, int> visited;
+std::unordered_map<std::string, int> visited;
 
 
 io::stream_buffer<io::file_sink> buf("log.txt", std::ios::app);
@@ -73,6 +73,10 @@ void httpProcessor(HttpClient& client, std::string& target) {
 
 
 	// std::cout << "Targeted " << target << "\n";
+	if (visited[target]) {
+		target = linkQueue.top(); linkQueue.pop();
+		httpProcessor(client, target);
+	}
 	visited[target]++;
 	std::string out;
 	if (client.get(target, out) < 0) {
