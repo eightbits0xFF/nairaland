@@ -10,22 +10,34 @@
 #include <Poco/URI.h>
 #include <queue>
 #include <stack>
+#include <ostream>
+#include <boost/iostreams/device/file.hpp>
+#include <boost/iostreams/stream.hpp>
+#include <regex>
+namespace io = boost::iostreams;
 
 #define NAIRALAND "www.nairaland.com"
-
-using namespace std;
 
 std::map<std::string, int> visited;
 
 
+io::stream_buffer<io::file_sink> buf("log.txt", std::ios::app);
+
 void processText(GumboNode* node) {
-
-
+	
 	if (node->type == GUMBO_NODE_TEXT) {
-		std::cout << node->v.text.text << "\n";
+		
+		if (node->parent->v.element.tag == GUMBO_TAG_A) {
+			auto hrefvalue = gumbo_get_attribute(&node->parent->v.element.attributes, "href")->value;
+			if (std::regex_match(hrefvalue, std::regex("/[0-9]+/([A-Za-z0-9]+(-[A-Za-z0-9]+)+)#[0-9]+"))) {
+				std::cout << node->v.text.text << "\n";
+			}
+			
+		}
+		std::ostream out(&buf, true);
+		out << node->v.text.text << "\n";
 	}
-
-
+	
 }
 
 static void search_for_links(GumboNode* node, std::vector<std::string>& urls) {
@@ -115,6 +127,7 @@ int main()
 
 	boost::certify::enable_native_https_server_verification(ssl_ctx);
 
+	
 	HttpClient client{ ssl_ctx, ctx, "www.nairaland.com" };
 	visited["/register"]++;
 	visited["/login"]++;
