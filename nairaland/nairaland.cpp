@@ -26,16 +26,22 @@ io::stream_buffer<io::file_sink> buf("log.txt", std::ios::app);
 void processText(GumboNode* node) {
 	
 	if (node->type == GUMBO_NODE_TEXT) {
-		
+		std::ostream out(&buf, true);
 		if (node->parent->v.element.tag == GUMBO_TAG_A) {
 			auto hrefvalue = gumbo_get_attribute(&node->parent->v.element.attributes, "href")->value;
-			if (std::regex_match(hrefvalue, std::regex("/[0-9]+/([A-Za-z0-9]+(-[A-Za-z0-9]+)+)#[0-9]+"))) {
-				std::cout << node->v.text.text << "\n";
+			if (std::regex_match(hrefvalue, std::regex("/[0-9]+/([A-Za-z0-9]+(-[A-Za-z0-9]+)+)#[0-9]+"))
+				
+				|| std::regex_match(hrefvalue, std::regex("/[0-9]+/([A-Za-z0-9]+(-[A-Za-z0-9]+)+)/\d#[0-9]+"))) {
+				out << node->v.text.text << "\n\n\r";
 			}
 			
 		}
-		std::ostream out(&buf, true);
-		out << node->v.text.text << "\n";
+		if (node->parent->v.element.tag == GUMBO_TAG_DIV &&
+			node->parent->parent->v.element.tag == GUMBO_TAG_TD) {
+			out << node->v.text.text << "\n";
+		}
+		
+		//out << node->v.text.text << "\n";
 	}
 	
 }
